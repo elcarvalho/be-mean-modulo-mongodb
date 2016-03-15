@@ -5,11 +5,11 @@
 > brew install mongodb
 
 Após a instalação vamos criar e dar permissão ao diretório utilizado pelo mongodb
-
+```
 sudo mkdir /data
 sudo mkdir /data/db
-sudo chmod 777 /data/db  *777 só para fins didático no maravilhoso mundo de localhost ;)*
-
+sudo chmod 777 /data/db  *777 só para fins didáticos no maravilhoso mundo de localhost ;)
+```
 dã! >.<
 
 ##Comando para exportar uma coleção
