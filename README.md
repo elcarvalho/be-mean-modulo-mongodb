@@ -28,3 +28,46 @@ dã! >.<
 - --collection ou -c: especifica a coleção a ser usada/criada;
 - --drop: apaga a coleção antes de inserir os novos dados;
 - --file: especifica o caminho do arquivo a ser importado.
+
+# Comandos básicos
+
+## Para exibir a database selecionada
+
+> db
+
+## Para mudar de database
+
+> use <nome_database>
+
+## Listem de databases
+
+> show dbs
+
+## Criar database e collection
+
+Para criar uma nova base de dados devemos selecionar a database e inserir algum registro nela
+
+```
+use be-mean-pokemons
+db.pokemons.insert({"name":"Bulbasaur","description":"Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun's rays, the seed grows progressively larger","attack":49, "defense":49, "height":0.7})
+```
+desta forma estaremos criando uma nova base chamada be-mean-pokemons e uma nova coleção chamada pokemons
+
+## Listando dados de uma collection
+
+> db.collection.find()
+
+## Excluindo uma collection
+
+> db.collection.drop()
+
+## Alterando objeto na coleção
+
+> findOne() diferente de find() retorna um objeto comum
+
+```
+var query = {"name":"Bulbasaur"}
+var p = db.pokemons.findOne(query)
+p.description = "descrição alterada"
+db.pokemons.save(p)
+```
