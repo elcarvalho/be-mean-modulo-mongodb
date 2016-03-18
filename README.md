@@ -71,3 +71,255 @@ var p = db.pokemons.findOne(query)
 p.description = "descrição alterada"
 db.pokemons.save(p)
 ```
+
+# Operadores lógicos
+
+## **$and**
+
+### Sintaxe 
+> { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+
+### Exemplo
+```
+db.inventory.find( { $and: [ { price: { $ne: 1.99 } }, { price: { $exists: true } } ] } )
+```
+
+## **$or**
+
+### Sintaxe 
+> { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
+
+### Exemplo
+```
+db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
+```
+
+## **$not**
+
+### Sintaxe 
+> { field: { $not: { <operator-expression> } } }
+
+### Exemplo
+```
+db.inventory.find( { price: { $not: { $gt: 1.99 } } } )
+```
+
+## **$nor**
+
+### Sintaxe 
+> { $nor: [ { <expression1> }, { <expression2> }, ...  { <expressionN> } ] }
+
+### Exemplo
+```
+db.inventory.find( { $nor: [ { price: 1.99 }, { sale: true } ]  } )
+```
+
+# Modificando documentos
+
+## Para alterar um documento no mongoDB existem dois métodos:
+ - save() *Para utilizar save() precisamos buscar o documento antes de alterá-lo*
+ - update()
+
+## A função **update()** recebe três parametros:
+  - query
+  - modificação
+  - opções **opcional**
+
+### Sintaxe
+> db.collection.update(query, mod, options)
+
+# Operadores de modificação
+
+## O operador **$set** modifica um valor ou cria ele caso não exista
+
+### Sintaxe
+> { $set: { campo : valor } }
+
+### Exemplo:
+```
+var query = {"name":"Pikachu"}
+var mod = {$set: {"attack":120}}
+db.pokemons.update(query, mod)
+```
+
+## O operador **$unset** é utilizado para remover campos
+
+### Sintaxe
+> { $unset: { campo : bool } }
+
+### Exemplo
+```
+var query = {"name":/pikachu/i}
+var mod = {$unset:{height:1}}
+db.pokemons.update(query, mod)
+```
+
+## O operador **$inc** incrementa um valor no campo com a quantidade desejada.
+
+*Caso o campo não exista, ele irá criar o campo e setar o valor. 
+
+Para decrementar, basta passar um valor negativo.*
+
+### Sintaxe
+> { $inc: { campo : valor } }
+
+### Exemplo
+```
+var query = {"name":/pikachu/i}
+var mod = {$inc:{attack:100}}
+db.pokemons.update(query, mod)
+```
+
+# Operadores de array
+
+## O operador **$push** adiciona um valor ao campo
+
+*caso o campo seja um Array existente. Caso não exista irá criar o campo novo, do tipo Array com o valor passado no $push.
+
+Caso o campo exista e não for um Array, irá retornar um erro.*
+
+### Sintaxe
+> { $push : { campo : valor } }
+
+### Exemplo
+```
+var query = {"name":/pikachu/i}
+var mod = {$push:{moves:'Thunder'}}
+db.pokemons.update(query, mod)
+```
+
+## O operador **$pushAll** adiciona cada valor do [array_de_valores_informado]
+
+### Sintaxe
+> { $pushAll : { campo : [array_de_valores] } }
+
+### Exemplo
+```
+var attacks = ["Thunder wave", "Thunderbolt", "Quick attack"]
+var query = {"name":/pikachu/i}
+var mod = {$pushAll:{moves:attacks}}
+db.pokemons.update(query, mod)
+```
+
+## O operador **$pull** retira o valor do campo
+
+### Sintaxe
+> { $pull : { campo : valor } }
+
+### Exemplo
+```
+var query = {"name":/pikachu/i}
+var mod = {$pull: {moves: 'Quick attack'}}
+db.pokemons.update(query, mod)
+```
+
+## O operador **$pullAll** retira cada valor do [array_de_valores_informado]
+
+### Sintaxe
+> { $pullAll : { campo : [array_de_valores] } }
+
+### Exemplo
+```
+var attacks = ['Thunder', 'Thunder wave']
+var mod = {$pullAll: {moves: attacks}}
+db.pokemons.update(query, mod)
+```
+
+## Objeto options da função update(query, mod, **options**)
+>O objeto options servirá para configurarmos alguns valores diferentes do padrão para o update.
+
+### Sintaxe
+> { upsert: boolean, multi: boolean, writeConcern: document }
+
+## upsert
+> O parâmetro **upsert** serve para caso o documento não seja encontrado pela query ele insira o objeto que está sendo passado como modificação.
+
+## $setOnInsert
+> Com esse operador você pode definir valores que serão adicionados apenas se ocorrer um upsert, ou seja, se o objeto for inserido pois não foi achado pela query.
+
+### Exemplo
+```
+var query = {"name":/PokemonInexistente/i}
+var mod = { $set: {"active":true}, $setOnInsert: {"name":"PokemonInexistente", "attack":null, "defense":null, "height":null, "description":"Sem informações"} }
+var options = {upsert:true}
+db.pokemons.update(query, mod, options)
+```
+
+## multi
+> Por padrão o mongoDB não deixa você alterar multiplos documentos sem passar o campo como true
+
+### Sintaxe
+> { multi : true }
+
+### Exemplo
+```
+var query = {}
+var mod = {$set: {moves: ['investida']}}
+var options = {multi: true}
+db.pokemons.update(query, mod, options)
+```
+
+## O operador **$in** retorna o(s) documento(s) que possui(em) algum dos valores passados no [array_de_valores_informado].
+
+### Sintaxe
+> { campo : { $in : [array_de_valores] } }
+
+### Exemplo
+```
+var query = {moves: {$in: [/thunder/i]}}
+db.pokemons.find(query)
+```
+
+## **$nin** retorna documentos se nenhum dos valores for encontrado.
+
+### Sintaxe
+> { campo : { $nin : [array_de_valores] } }
+
+### Exemplo
+```
+var query = {moves: {$nin: [/thunder/i]}}
+db.pokemons.find(query)
+```
+
+## **$all* retorna documentos se todos os valores foram encontrados.
+
+### Sintaxe
+> { campo : { $all : [ array_de_valores ] } } )
+
+### Exemplo
+```
+var query = {moves: {$all: ['Thunder', 'investida']}}
+db.pokemons.find(query)
+```
+
+# Operadores de negação
+
+## $ne Not Equal (não aceita regex)
+
+### Sintaxe
+> { campo : { $ne : valor} }
+
+### Exemplo
+```
+var query = {type: {$ne: 'grama'}}
+db.pokemons.find(query)
+```
+
+## $not
+
+### Sintaxe
+> { campo : { $not : valor} }
+
+### Exemplo
+```
+var query = { name : { $not : /pikachu/i } }
+db.pokemons.find(query)
+```
+
+# remove()
+
+### Exemplo
+```
+var query = {name: \squirtle\i}
+db.pokemons.remove(query)
+```
