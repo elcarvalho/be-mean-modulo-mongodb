@@ -22,7 +22,7 @@ dã! >.<
 
 ##Comando para importar uma coleção
 
-> mongoexport --db nome_do_database --collection nome_da_colecao --out minha_colecao.json
+> mongoimport --db database --collection collection --drop --file data.json
 
 - --db ou -d: especifica a database a ser usada/criada;
 - --collection ou -c: especifica a coleção a ser usada/criada;
