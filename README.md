@@ -76,7 +76,7 @@ db.pokemons.save(p)
 
 ## **$and**
 
-### Sintaxe 
+### Sintaxe
 > { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
 
 ### Exemplo
@@ -86,7 +86,7 @@ db.inventory.find( { $and: [ { price: { $ne: 1.99 } }, { price: { $exists: true 
 
 ## **$or**
 
-### Sintaxe 
+### Sintaxe
 > { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
 
 ### Exemplo
@@ -96,7 +96,7 @@ db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
 
 ## **$not**
 
-### Sintaxe 
+### Sintaxe
 > { field: { $not: { <operator-expression> } } }
 
 ### Exemplo
@@ -106,7 +106,7 @@ db.inventory.find( { price: { $not: { $gt: 1.99 } } } )
 
 ## **$nor**
 
-### Sintaxe 
+### Sintaxe
 > { $nor: [ { <expression1> }, { <expression2> }, ...  { <expressionN> } ] }
 
 ### Exemplo
@@ -156,7 +156,7 @@ db.pokemons.update(query, mod)
 
 ## O operador **$inc** incrementa um valor no campo com a quantidade desejada.
 
-*Caso o campo não exista, ele irá criar o campo e setar o valor. 
+*Caso o campo não exista, ele irá criar o campo e setar o valor.
 
 Para decrementar, basta passar um valor negativo.*
 
@@ -322,4 +322,132 @@ db.pokemons.find(query)
 ```
 var query = {name: \squirtle\i}
 db.pokemons.remove(query)
+```
+
+# **count()**
+
+### Sintaxe
+> db.collection.count(query)
+
+### Exemplo
+```
+var query = {"borough" : "Bronx"}
+db.restaurantes.count(query)
+```
+
+# **distinct()**
+
+### Sintaxe
+> db.collection.distinct('valor')
+
+### Exemplo
+```
+db.restaurantes.distinct("borough")
+```
+
+# **limit()**
+
+### Sintaxe
+> db.collection.find(query).limit(int)
+
+## **skip()**
+
+### Sintaxe
+> db.collection.find(query).limit(int).skip(int)
+
+### Exemplo
+```
+var qtd = 15
+var query = {"cuisine":/american/i}
+db.restaurantes.find(query).limit(qtd).skip(qtd * 0)
+db.restaurantes.find(query).limit(qtd).skip(qtd * 1)
+db.restaurantes.find(query).limit(qtd).skip(qtd * 2)
+```
+
+# **group()**
+
+### Sintaxe
+> db.collection.group({ key, reduce, initial [, keyf] [, cond] [, finalize] })
+```
+key - o(s) campo(s) para agrupar
+reduce - Uma função de agregação que opera sobre os documentos durante a operação de agrupamento.
+initial - Inicializa uma ou mais variaveis que poderão ser usadas dentro de reduce
+cond - Define uma condição para o agrupamento
+```
+
+### Exemplo 1
+```
+db.pokemons.group(
+{
+    initial : {total : 0},
+    cond : {defense : {$gt : 100}},
+    reduce : function(curr, result){
+
+      curr.types.forEach(function(type){
+          if(result[type]) {
+            result[type]++;
+          } else {
+            result[type] = 1;
+          }
+
+          result.total++;
+      });
+
+    }
+})
+```
+
+### Exemplo 2
+```
+db.pokemons.group(
+{
+    initial : {total : 0, defense : 0, attack : 0},
+    reduce : function(curr, result){
+      result.total++;
+      result.defense += curr.defense;
+      result.attack += curr.attack;
+    },
+    finalize : function(result){
+      result.avg_defense = result.defense / result.total;
+      result.avg_attack = result.attack / result.total;
+    }
+})
+```
+
+# **aggregate()**
+
+### Sintaxe
+> db.collection.aggregate(pipeline, options)
+
+### Exemplo 1
+```
+db.pokemons.aggregate({
+    $group : {
+      _id : {},
+      defense_avg : { $avg : '$defense' },
+      attack_avg : { $avg : '$attack' },
+      defense : { $sum : '$defense'},
+      attack : { $sum : '$attack'},
+      total : { $sum : 1 }
+    }
+})
+```
+
+### Exemplo 2
+```
+db.pokemons.aggregate([
+  {
+    $match : { 'types' : 'fire' }
+  },
+  {
+    $group : {
+      _id : {},
+      defense_avg : { $avg : '$defense' },
+      attack_avg : { $avg : '$attack' },
+      defense : { $sum : '$defense'},
+      attack : { $sum : '$attack'},
+      total : { $sum : 1 }
+    }
+  }
+  ])
 ```
