@@ -7,7 +7,7 @@ Neste artigo sobre instanciação irei abordar alguns assuntos que podem ser con
 
 Antes, gostaria de falar sobre declaração de variáveis pois vai nos ajudar a compreender o assuntos citados acima.
 
-Variáveis declaradas são processados antes que qualquer código seja executado. Segundo o MDN "o escopo de uma variável declarada com var é seu contexto atual em execçuão", ou seja, se uma variável é declarada dentro de uma função seu escopo será a função onde ela foi declarada, variáveis declaradas fora de uma função pertencem ao escopo global. Quando atribuímos um valor a uma variável que não foi inicializada anteriormente esta vai pertencer ao escopo global, vejamos o exemplo a seguir:
+Variáveis declaradas são processados antes que qualquer código seja executado. Segundo o MDN "o escopo de uma variável declarada com var é seu contexto atual em execçuão", ou seja, se uma variável é declarada dentro de uma função seu escopo será a função onde ela foi declarada, variáveis declaradas fora de uma função pertencem ao escopo global. Quando atribuímos um valor a uma variável que não foi declarada anteriormente esta vai pertencer ao escopo global, vejamos o exemplo a seguir:
 
 ```
 var a = 'Variável A';
@@ -70,6 +70,36 @@ hoisting() //chamada da função
 console.log(a) //aqui é impresso o valor definido na variavel global
 ```
 
+terminamos aqui **Variable hoisting** e aprendemos que apenas as declarações são elevadas(hoisted) ao inicio de seu escopo e não sua inicialização.
+
+agora irei falar sobre **Function hoisting**, sim funções também sofrem hoisting mas diferente de como acontece com as variáveis. veja o exemplo:
+```
+functionHoisting()
+
+function functionHoisting(){
+	console.log('Log da função functionHoisting')	
+}
+```
+no código escrito acima o log é exibido sem erro, mesmo a função sendo chamada antes de sua declaração isso porque a função foi elevada junto com seu corpo. Agora outro exemplo:
+
+```
+function functionHoisting (){
+  function getValor() {
+    return 3
+  }
+
+  return getValor()
+
+  function getValor() {
+    return 8
+  }
+}
+
+console.log(functionHoisting())
+```
+Neste exemplo temos a mesma função sendo declarada no inicio e no fim da função *functionHoisting* ao executar podemos ver que o valor impresso no log é 8 pois a função *getValor* é elevada e sobreescreve a que foi escrita no inicio de *functionHoisting*
+
+>ATENÇÃO: quando uma função é declarada como expressão *var fun = function(){}* a regra de hoisting aplicada é a de **variable hoisting**
 
 ## Closure
 
